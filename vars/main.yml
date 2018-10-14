@@ -1,0 +1,11 @@
+---
+
+nfs_mounts:
+  first_nfs_mount:
+    path: /mnt/first
+    src: 1.1.1.1:/first
+    opts: defaults
+  second_nfs_mount:
+    path: /mnt/second
+    src: hostvars[groups['nfs_server'][0]]['ansible_eth0']['ipv4']['address']:/second
+    opts: defaults

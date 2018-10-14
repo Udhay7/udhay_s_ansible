@@ -1,0 +1,16 @@
+---
+
+- name: restart portmap
+  service:
+    name: portmap
+    state: restarted
+
+- name: restart smb
+  service:
+    name: smb
+    state: restarted
+
+- name: restart realmd
+  service:
+    name: realmd
+    state: restarted

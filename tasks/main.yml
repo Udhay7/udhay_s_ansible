@@ -1,0 +1,82 @@
+---
+
+# Hosts File – The local host name of the system is not entered into the hosts file
+# Update IPv4 address with FQDN and hostname
+- name: update hosts with ipv4
+  lineinfile:
+    path: /etc/hosts.conf
+    line: "{{ ansible_default_ipv4.address }} {{ ansible_fqdn }} {{ ansible_hostname }}"
+  when: ansible_default_ipv4.address is defined
+
+# Update IPv6 address with FQDN and hostname
+- name: update hosts with ipv6
+  lineinfile:
+    path: /etc/hosts.conf
+    line: "{{ ansible_default_ipv6.address }} {{ ansible_fqdn }} {{ ansible_hostname }}"
+  when: ansible_default_ipv6.address is defined
+
+# Install both NFS and SMB client tools for access to these resources.
+# Install packages
+- name: install packages
+  yum:
+    name: {{ item }}
+    state: present
+  with_items:
+    - nfs-utils
+    - nfs-utils
+    - samba
+    - samba-common
+    - samba-client
+    - realmd
+
+# •DNS – Currently the Linux based servers do not register with DNS and need to be manually registered. This is to be automated
+# Use realmd to propogate DNS changes
+# •AD Domain Join function – Move Computer account in AD from Computers OU to Servers/Linux OU.
+# Use realmd to handle OU integration
+- name: configure realmd
+  template:
+    src: realmd.conf.j2
+    dest: /etc/realmd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart realmd
+
+- name: start realmd
+  service:
+    name: realmd
+    state: started
+    enabled: true
+
+# Install both NFS and SMB client tools for access to these resources.
+# Copy configs for samba
+- name: install samba configs
+  template:
+    src: smb.conf.j2
+    dest: /etc/smb.conf
+    owner: root
+    group: root
+    mode: 0644
+    validate: 'testparm -s %s'
+  notify: restart smb
+
+- name: restart samba
+  meta: flush_handlers
+
+- name: start rpcbind
+  service:
+    name: rpcbind
+    state: started
+    enabled: true
+
+# Create nfs mounts using nfs_mounts dictionary
+- name: update nfs mounts
+  mount:
+    name: {{ item.key }}
+    path: {{ item.path.value }}
+    src: {{ item.src.value }}
+    fstype: nfs
+    opts: {{ item.opts.value }}
+    state: mounted
+  with_dict:
+    - "{{ nfs_mounts }}"
