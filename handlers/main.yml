@@ -14,3 +14,8 @@
   service:
     name: realmd
     state: restarted
+
+- name: restart sssd
+  service:
+    name: realmd
+    state: restarted

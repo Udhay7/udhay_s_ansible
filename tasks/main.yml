@@ -51,6 +51,24 @@
     state: started
     enabled: true
 
+- name: configured sssd
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart sssd
+
+- name: restart sssd
+  meta: flush_handlers
+
+- name: start sssd
+  service:
+    name: sssd
+    state: started
+    enabled: true
+
 # Install both NFS and SMB client tools for access to these resources.
 # Copy configs for samba
 - name: install samba configs
