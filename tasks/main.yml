@@ -28,6 +28,7 @@
     - samba-common
     - samba-client
     - realmd
+    - sssd
 
 # •DNS – Currently the Linux based servers do not register with DNS and need to be manually registered. This is to be automated
 # Use realmd to propogate DNS changes
