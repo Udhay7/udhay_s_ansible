@@ -4,7 +4,7 @@
 # Update IPv4 address with FQDN and hostname
 - name: update hosts with ipv4
   lineinfile:
-    path: /etc/hosts.conf
+    path: /etc/hosts
     line: "{{ ansible_default_ipv4.address }} {{ ansible_fqdn }} {{ ansible_hostname }}"
   when: ansible_default_ipv4.address is defined
 
@@ -19,7 +19,7 @@
 # Install packages
 - name: install packages
   yum:
-    name: {{ item }}
+    name: "{{ item }}"
     state: present
   with_items:
     - nfs-utils
@@ -75,11 +75,11 @@
 # Create nfs mounts using nfs_mounts dictionary
 - name: update nfs mounts
   mount:
-    name: {{ item.key }}
-    path: {{ item.path.value }}
-    src: {{ item.src.value }}
+    name: "{{ item.key }}"
+    path: "{{ item.path.value }}"
+    src: "{{ item.src.value }}"
     fstype: nfs
-    opts: {{ item.opts.value }}
+    opts: "{{ item.opts.value }}"
     state: mounted
   with_dict:
     - "{{ nfs_mounts }}"
