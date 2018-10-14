@@ -11,7 +11,7 @@ Done via ansible
 •AD Domain Join function – Move Computer account in AD from Computers OU to Servers/Linux OU.
 
 Expand existing realm join to include (see below), although a better way would
-to use the realm.conf:
+to use the realm.conf provided (replace content with your own requirements/environment)
 
 ```
 realm join --computer-ou="ou=Linux Computers,dc=domain,dc=com" --user={{ ad_domain_username }} {{ ad_domain_dname }}
